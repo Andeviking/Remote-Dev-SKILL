@@ -20,7 +20,7 @@ An example record is:
 
 Replace the examples with known facts; omit unknown or irrelevant fields. Prefer an existing SSH host alias so ports, identities, and jump hosts remain managed by SSH. Note project-specific transfer choices when they are useful for subsequent work. Do not store passwords, private-key contents, or copied credentials.
 
-Read the record when this skill is activated for an applicable task. A record does not itself activate a skill in a new conversation: explicit invocation and automatic discovery are separate host capabilities. Reuse available context without claiming automatic discovery has been verified.
+The host handles skill discovery and selection. Once the skill is selected for a task or explicitly invoked, read the project's record to reuse its saved setup.
 
 Apply temporary overrides to the current task without replacing persistent defaults. For example, “use the other server this time” is temporary; “use this server from now on” changes the saved default. When establishing a record, save the agreed setup rather than treating incidental commands or observed paths as new defaults.
 
@@ -33,9 +33,17 @@ Keep the record local-only by default. When using `.remote-dev/`, exclude that d
 
 Hiding a directory is not an exclusion mechanism. If an existing record is already tracked, explain the situation before changing tracking; do not rewrite repository history as part of setup. If no Git repository exists, keep the record out of transfers and apply Git exclusion when Git is introduced.
 
+## Check rsync availability
+
+Rsync over SSH needs a working rsync executable on both ends. On a new target, check from the non-interactive SSH session that will run the transfer. If an existing remote executable is outside that session's `PATH`, select it with `--rsync-path`.
+
+If rsync is missing, explain where you propose to put it and confirm that scope with the user unless they already approved the setup. When the remote has no internet access, obtain a trusted package for its system and architecture locally, including any required libraries. Check available package integrity information and transfer the files over SSH, for example with `scp`. A project-local copy can be selected with `--rsync-path` and avoids a system-wide install. Verify that it runs before syncing.
+
 ## Choose scope by file role
 
 Sync source and configuration required by the task. Keep unrelated remote virtual environments, data, model files, caches, remote-specific configuration, and outputs intact. Transfer any of these when explicitly requested or needed, using a suitable scope rather than a universal filename blacklist. A local virtual environment is not a substitute for the remote runtime.
+
+Exclude local configuration that contains credentials from uploads by default. If the task requires transferring any of it, confirm the exact transfer scope with the user first.
 
 Resolve the local source and remote destination before transferring. A trailing slash on the rsync source means copying its contents; check the destination layout to avoid creating an extra project directory level. Quote paths appropriately for both local and remote command interpretation.
 
@@ -45,7 +53,9 @@ Use selective transfers or project-wide synchronization as the changes warrant. 
 
 Use the available Git state, development context, and actual file differences to assess changes. A preview shows planned operations, not who changed a file. Timestamps and differing contents do not establish that the remote has independent edits, nor prove that it has none.
 
-If remote independent edits would be overwritten, explain the differences and wait for the user's decision. If the source of relevant changes is uncertain, compare further or ask before overwriting. Do not classify known local edits awaiting synchronization as a conflict.
+If you know what was last transferred, compare the affected remote files with that version before overwriting or deleting them. A content hash can be enough for a targeted check.
+
+If an overwrite or deletion would discard independent remote edits, explain what would be lost and wait for the user's decision. If the source of relevant changes is uncertain, compare further or ask before proceeding. Treat known local edits awaiting synchronization as expected differences.
 
 Handle deleted or renamed source files so stale code does not remain in use, while preserving remote-only content. Do not infer deletion authority from local absence alone or apply broad mirroring options without considering the affected files. Choose the mechanics for the actual change; no separate synchronization database is required.
 

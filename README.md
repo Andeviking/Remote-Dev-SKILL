@@ -2,29 +2,41 @@
 
 A lightweight, instruction-only skill for editing an existing project locally, syncing with rsync, and using a remote environment over SSH.
 
-The first English draft is ready for review. No scripts are included. Remote execution and automatic discovery across conversations have not yet been verified.
+The workflow was tested on an Ubuntu CPU server by installing Python dependencies from locally downloaded wheels, syncing a source edit, rerunning it in the same remote venv, and retrieving the results.
 
 ## Install in Codex
 
 Install on the local machine running Codex. The remote server does not need the skill.
 
-For a personal installation on macOS or Linux, run the following from this repository's root. It links the skill into Codex's user skill directory and leaves any existing installation unchanged:
+### Project installation (recommended)
+
+Copy the complete skill into the local project that will use it. On macOS or Linux, run the following from this repository's root after replacing the example path with an existing project's absolute path:
 
 ```sh
-mkdir -p "$HOME/.agents/skills"
-test ! -e "$HOME/.agents/skills/remote-dev" &&
-  test ! -L "$HOME/.agents/skills/remote-dev" &&
-  ln -s "$PWD/skills/remote-dev" "$HOME/.agents/skills/remote-dev"
+target_project="/absolute/path/to/your-project"
+test -d "$target_project" &&
+  mkdir -p "$target_project/.agents/skills" &&
+  test ! -e "$target_project/.agents/skills/remote-dev" &&
+  test ! -L "$target_project/.agents/skills/remote-dev" &&
+  cp -R "$PWD/skills/remote-dev" "$target_project/.agents/skills/remote-dev"
 ```
 
-If that destination already exists, inspect and reuse the existing installation rather than replacing it blindly. A symlinked installation uses this checkout directly; alternatively, copy the complete `skills/remote-dev/` directory, including `references/`, to the same destination.
+These commands leave any existing installation unchanged. If the destination exists, inspect and reuse it or deliberately update it. Keep `references/` together with `SKILL.md`.
 
-For project-only use, place the complete skill directory at `<project>/.agents/skills/remote-dev/` instead.
+The copied skill can be committed with the target project to share the workflow and keep its version explicit. Personal connection records in `.remote-dev/` should still remain local-only, as described in the skill.
 
-Start a new Codex chat and invoke `$remote-dev` to try the skill. See the [official Codex skill documentation](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills) for discovery rules.
+For local skill development, a project-local symlink to this checkout is also possible. Prefer a complete copy when sharing a project so it does not depend on a path on one person's machine.
+
+Start a new Codex chat in the target project and describe the remote task. For example, ask “Run this project's tests in its existing remote Python environment.” In a fresh-chat test, Codex selected the project-installed skill from a natural-language request and reused the saved remote configuration. To invoke the skill explicitly, type `$remote-dev`.
+
+### Personal installation (optional)
+
+Only if you explicitly want the skill available across all projects, copy or link the complete `skills/remote-dev/` directory to `~/.agents/skills/remote-dev/`. Project installation does not require this step.
+
+See the [official Codex skill documentation](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills) for discovery rules.
 
 ## Project documents
 
-- [Skill draft](skills/remote-dev/SKILL.md): core instructions and links to the relevant references.
+- [Skill instructions](skills/remote-dev/SKILL.md) and links to the relevant references.
 
 The `docs/` directory is reserved for user-facing documentation.

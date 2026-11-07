@@ -18,9 +18,9 @@ Maintain a small local project record for future conversations. Keep temporary o
 ## Work locally and execute remotely
 
 - Edit project source locally by default. Configure the remote environment when requested, without treating local missing dependencies as evidence about the remote environment.
-- Sync source and necessary configuration with rsync. Choose the scope for the current changes; preserve unrelated remote environments, data, caches, configuration, and outputs. Transfer these separately when the task calls for them.
-- If remote source has independent edits, compare and explain the differences, then obtain the user's confirmation before overwriting them. Ask if you cannot establish whether an overwrite would destroy independent changes. Ordinary differences caused by the current local edits are expected and do not require confirmation.
-- Handle source deletions deliberately. A file absent locally is not, by itself, permission to delete its remote counterpart. Use [Sync and project records](references/sync-and-records.md) for transfer details; do not assume a full directory mirror is appropriate.
+- Sync source and necessary configuration with rsync. If either side is missing rsync, use [Sync and project records](references/sync-and-records.md) to agree on setup. Choose the scope for the current changes and preserve unrelated remote environments, data, caches, configuration, and outputs. Transfer these separately when the task calls for them.
+- Before overwriting or deleting remote source, check for independent remote edits that would be lost. If you find any, explain the differences and obtain the user's confirmation. Ask when you cannot establish whether independent changes would be lost. Ordinary differences caused by the current local edits are expected.
+- Handle source deletions and renames deliberately. Base remote deletions on the intended source changes and preserve remote-only content. Use [Sync and project records](references/sync-and-records.md) to choose the transfer scope.
 - Execute in the intended remote directory and user-specified environment. Select commands, debugging techniques, and long-running execution methods as needed rather than imposing a fixed toolchain.
 - Distinguish local edits, completed synchronization, and observed execution results. Check that relevant changes reached the remote before attributing a result to them; do not repeat a full preflight or transfer the whole project without a reason.
 
@@ -41,5 +41,5 @@ Use the user's destination or a local directory such as `.remote-dev/results/`, 
 | Situation | Reference |
 | --- | --- |
 | First authentication setup, key selection, or connection failure | [SSH authentication](references/ssh.md) |
-| Creating a local record, deciding transfer boundaries, or checking a risky sync | [Sync and project records](references/sync-and-records.md) |
+| Creating a local record, setting up rsync, choosing transfer boundaries, or checking a risky sync | [Sync and project records](references/sync-and-records.md) |
 | Requested environment setup or downloads affected by missing internet access or slow sources | [Offline preparation and downloads](references/offline.md) |

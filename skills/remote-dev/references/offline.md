@@ -18,6 +18,10 @@ For slow downloads, compare candidate sources or mirrors when that would help. U
 
 Use the project's existing download and installation tools. Choose offline or local-file options appropriate to those tools; do not introduce a proxy service, container workflow, or package-management framework merely to support the skill.
 
+For a pip project, prepare a wheelhouse of compatible wheels. [`pip download`](https://pip.pypa.io/en/stable/cli/pip_download/) can select wheels for a different target using its platform tags, Python version, implementation, and ABI with `--only-binary=:all:`. Pip still evaluates dependency markers such as `sys_platform` and `python_version` in the environment running it. When those markers change which dependencies the target needs, resolve the full set, including transitive dependencies, in a matching environment or with a resolver that evaluates markers for the target. Download the resulting package versions with `--no-deps` from a complete target-specific list with the already evaluated markers removed.
+
+Sync the wheelhouse separately and install with the remote venv's Python using `-m pip install --no-index --find-links <wheelhouse> -r <requirements>`. Resolve any direct network URLs in the requirements to local files for an offline install.
+
 ## Verify the requested operation
 
 Check that transferred files are complete and usable by the intended remote environment. Run a small relevant installation or runtime check before relying on the prepared files. A successful local download does not establish that the remote task works offline.
